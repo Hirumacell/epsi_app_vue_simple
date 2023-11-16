@@ -9,52 +9,67 @@
 		</style>
 	</head>
 	<body>
+	<div class="container">
 	<div id="app">
 		<h1>Liste des évenements à Nantes</h1>
-		<table border="1">
+		<table border="1" class="table">
         <thead>
             <tr>
-                <th>Nom</th>
-                <th>Lieu</th>
-                <th>Adresse</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Lieu</th>
+                <th scope="col" >Adresse</th>
+                <th scope="col" >Date</th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="event in events" :key="event.nom">
+            <tr v-for="event in uniqueEvents">
                 <td>{{ event.nom }}</td>
                 <td>{{ event.lieu }}</td>
                 <td>{{ event.adresse }}</td>
+                <td>{{ event.date }}</td>
             </tr>
         </tbody>
-		
-    </table>
+	</div>	
 	</div>	
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://unpkg.com/vue@3"></script>
 	<script>
-	const APIurl = "https://data.nantesmetropole.fr/api/explore/v2.1/catalog/datasets/244400404_agenda-evenements-nantes-nantes-metropole/records?select=nom%2C%20adresse%2C%20lieu&limit=40"
+	const APIurl = "https://data.nantesmetropole.fr/api/explore/v2.1/catalog/datasets/244400404_agenda-evenements-nantes-nantes-metropole/records?select=nom%2C%20adresse%2C%20lieu%2C%20date&limit=100"
 	const app = Vue.createApp({
 	data() {
 		return {
 			events: [],
 		};
 	},
+	computed: {
+            uniqueEvents() {
+                // Filter unique events based on the "nom" property
+                const uniqueNames = new Set();
+                return this.events.filter(event => {
+                    if (!uniqueNames.has(event.nom)) {
+                        uniqueNames.add(event.nom);
+                        return true;
+                    }
+                    return false;
+                });
+            },
+        },
 	mounted() {
 		this.fetchEventData();
 	},
 	methods: {
-		async fetchEventData() {
-			try {
-				const response = await axios.get(APIurl);
-				console.log(response.data);
-				this.events = data.results;
-			} catch (error) {
-				console.error('Error fetching data:', error);
-			}
-		},
-	},
+            async fetchEventData() {
+                try {
+                    const response = await axios.get(APIurl);
+                    console.log(response.data);
+                    this.events = response.data.results;
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            },
+        },
     });
     app.mount('#app');
-</script>
+	</script>
 	</body>
 </html>
