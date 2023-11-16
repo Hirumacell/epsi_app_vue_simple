@@ -12,6 +12,13 @@
 	<div class="container">
 	<div id="app">
 		<h1>Liste des évenements à Nantes</h1>
+		<div class="bar">
+                <input
+                    type="text"
+                    v-model="searchString"
+                    placeholder="Enter your search terms"
+                />
+            </div>
 		<table border="1" class="table">
         <thead>
             <tr>
@@ -38,6 +45,7 @@
 	const app = Vue.createApp({
 	data() {
 		return {
+			search: "",
 			events: [],
 		};
 	},
