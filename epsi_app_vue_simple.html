@@ -10,9 +10,9 @@
 	</head>
 	<body>
 	<div class="container">
-	<div id="app">
-		<h1>Liste des évenements à Nantes</h1>
-		<form>
+		<div id="app">
+			<h1>Liste des évenements à Nantes</h1>
+			<form>
 			<div class="form-group">
 				<label for="exampleFormControlSelect1">Choisir une catégorie :</label>
 				<select class="form-control" id="exampleFormControlSelect1" v-model="selectedCategory">
@@ -20,33 +20,33 @@
 					<option v-for="category in uniqueCategories" :key="category" :value="category">{{ category }}</option>
 				</select>
 			</div>
-		<table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Nom</th>
-                <th scope="col">Lieu</th>
-                <th scope="col" >Adresse</th>
-                <th scope="col" >Date</th>
-				<th scope="col" >Carte</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="event in uniqueEvents">
-                <td>{{ event.nom }}</td>
-                <td>{{ event.lieu }}</td>
-                <td>{{ event.adresse }}</td>
-                <td>{{ event.date }}</td>
-				<td scope="row">
-					<a type="button" class="btn btn-dark" :href="'https://www.google.com/maps?q=' + event.latitude + ',' + event.longitude" target="_blank">Afficher</a>
-				</td>
-            </tr>
-        </tbody>
-	</div>	
+			<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Nom</th>
+					<th scope="col">Lieu</th>
+					<th scope="col" >Categorie</th>
+					<th scope="col" >Date</th>
+					<th scope="col" >Carte</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="event in filteredEvents">
+					<td>{{ event.nom }}</td>
+					<td>{{ event.lieu }}</td>
+					<td>{{ event.categorie_1 }}</td>
+					<td>{{ event.date }}</td>
+					<td scope="row">
+						<a type="button" class="btn btn-dark" :href="'https://www.google.com/maps?q=' + event.latitude + ',' + event.longitude" target="_blank">Afficher</a>
+					</td>
+				</tr>
+			</tbody>
+		</div>	
 	</div>	
 	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 	<script src="https://unpkg.com/vue@3"></script>
 	<script>
-	const APIurl = "https://data.nantesmetropole.fr/api/explore/v2.1/catalog/datasets/244400404_agenda-evenements-nantes-nantes-metropole/records?select=nom%2C%20adresse%2C%20lieu%2C%20date&limit=100"
+	const APIurl = "https://data.nantesmetropole.fr/api/explore/v2.1/catalog/datasets/244400404_agenda-evenements-nantes-nantes-metropole/records?select=nom%2C%20adresse%2C%20lieu%2C%20date%2C%20latitude%2C%20longitude%2C%20categorie_1&limit=-1"
 	const app = Vue.createApp({
 	data() {
 		return {
@@ -87,7 +87,6 @@
             async fetchEventData() {
                 try {
                     const response = await axios.get(APIurl);
-                    console.log(response.data);
                     this.events = response.data.results;
                 } catch (error) {
                     console.error('Error fetching data:', error);
