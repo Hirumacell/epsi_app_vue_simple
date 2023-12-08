@@ -12,20 +12,22 @@
 	<div class="container">
 	<div id="app">
 		<h1>Liste des évenements à Nantes</h1>
-		<div class="bar">
-                <input
-                    type="text"
-                    v-model="searchString"
-                    placeholder="Enter your search terms"
-                />
-            </div>
-		<table border="1" class="table">
+		<form>
+			<div class="form-group">
+				<label for="exampleFormControlSelect1">Choisir une catégorie :</label>
+				<select class="form-control" id="exampleFormControlSelect1" v-model="selectedCategory">
+					<option value="">Toutes les catégories</option>
+					<option v-for="category in uniqueCategories" :key="category" :value="category">{{ category }}</option>
+				</select>
+			</div>
+		<table class="table">
         <thead>
             <tr>
                 <th scope="col">Nom</th>
                 <th scope="col">Lieu</th>
                 <th scope="col" >Adresse</th>
                 <th scope="col" >Date</th>
+				<th scope="col" >Carte</th>
             </tr>
         </thead>
         <tbody>
@@ -34,6 +36,9 @@
                 <td>{{ event.lieu }}</td>
                 <td>{{ event.adresse }}</td>
                 <td>{{ event.date }}</td>
+				<td scope="row">
+					<a type="button" class="btn btn-dark" :href="'https://www.google.com/maps?q=' + event.latitude + ',' + event.longitude" target="_blank">Afficher</a>
+				</td>
             </tr>
         </tbody>
 	</div>	
@@ -45,13 +50,12 @@
 	const app = Vue.createApp({
 	data() {
 		return {
-			search: "",
+			selectedCategory: "",
 			events: [],
 		};
 	},
 	computed: {
             uniqueEvents() {
-                // Filter unique events based on the "nom" property
                 const uniqueNames = new Set();
                 return this.events.filter(event => {
                     if (!uniqueNames.has(event.nom)) {
@@ -60,6 +64,20 @@
                     }
                     return false;
                 });
+            },
+            uniqueCategories() {
+                const uniqueCategories = new Set();
+                this.events.forEach(event => {
+                    uniqueCategories.add(event.categorie_1);
+                });
+                return Array.from(uniqueCategories);
+            },
+            filteredEvents() {
+                if (this.selectedCategory === "") {
+                    return this.uniqueEvents;
+                } else {
+                    return this.uniqueEvents.filter(event => event.categorie_1 === this.selectedCategory);
+                }
             },
         },
 	mounted() {
